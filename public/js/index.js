@@ -24,11 +24,7 @@
                 mainWindow.getBounds(function(bounds){
 
                     console.log('where im at', bounds);
-                    console.log('this is the main window in here ', {
-                        name : mainWindow.name,
-                        app_uuid : mainWindow.app_uuid,
-                        location:  bounds
-                    });
+                    console.log('this is the main window in here ', mainWindow);
                     fin.desktop.InterApplicationBus.publish( "dock-subscribe", {
                         name : mainWindow.name,
                         app_uuid : mainWindow.app_uuid,
@@ -47,10 +43,7 @@
 
                 mainWindow.getBounds(function(bounds){
 
-                    console.log('where im at', bounds,{
-                        bounds : bounds,
-                        name : mainWindow.name
-                    });
+                    console.log('where im at', bounds);
 
                     fin.desktop.InterApplicationBus.publish( "dock-window-move", {
                         bounds : bounds,
@@ -64,34 +57,38 @@
 
             });
 
-            // fin.desktop.InterApplicationBus.subscribe("snap-map", "dock-to", function (data) {
-            //     console.log('Ive been told to dock!', data);
+            fin.desktop.InterApplicationBus.subscribe("snap-map", "dock-to", function (data) {
+                //console.log('Ive been told to dock!', data);
 
-            //     var windowList = [mainWindow];
+                var windowList = [mainWindow];
 
-            //     fin.desktop.Application.getCurrent()
-            //         .getChildWindows(function(children){
-            //             // //console.log('this is for a dock', children, typeof children);
-            //             // if (children) {
-            //             //     windowList = windowList.concat(children);
-            //             //     //console.log('this is the windowList', windowList);
+                fin.desktop.Application.getCurrent()
+                    .getChildWindows(function(children){
+                        var docker, dockee;
 
-            //             //     var dockMap = _.object(_.map(windowList, function(wnd){
-            //             //         return [wnd.name, wnd];
-            //             //     }));
-            //             //     console.log('this is the dockMap', dockMap, data);
+                        console.log('this is for a dock', children, typeof children);
 
-            //             //     dockMap[data.docker].joinGroup(dockMap[data.dockee]);
-            //             //     //console.log('this be the windows ',dockMap[data.docker], dockMap[data.dockee]  )
+                        if (children) {
+                            windowList = windowList.concat(children);
+                            console.log('this is the windowList', windowList);
+
+                            var dockMap = _.object(_.map(windowList, function(wnd){
+                                return [wnd.name, wnd];
+                            }));
+                            console.log('this is the dockMap', dockMap, data);
+
+                            console.log('this is the docker deal', dockMap[data.docker])
+                            docker = dockMap[data.docker];
+                            dockee = dockMap[data.dockee];
+                            _.once(docker.joinGroup(dockee));
+
+                        }//end if children
 
 
-            //             // }//end if children
+                    })//end getChildWindows
 
 
-            //         })//end getChildWindows
-
-
-            // });//end subscribe
+            });//end subscribe
 
             //set up window move effects.
             //utils.registerDragHandler(mainWindow);

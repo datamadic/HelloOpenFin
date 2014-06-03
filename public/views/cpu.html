@@ -8,9 +8,9 @@
 </head>
 <body class="of-draggable">
     <div class="container of-draggable">
-        <span  class="undock" class="btn top-btn ">
+        <div style="color:red;" class="undock" class="btn top-btn ">
             UNDOCK
-        </span>
+        </div>
         <div id="minimize-window" class="btn top-btn cpu-minimize">
             <div class="minimize-bar"></div>
         </div>
@@ -76,9 +76,9 @@
                     }); //end bounds changing
 
 
-                    fin.desktop.InterApplicationBus.subscribe("snap-map", "dock-to", function (data) {
-                        console.log('Ive been told to dock!', data);
-                    });
+                    // fin.desktop.InterApplicationBus.subscribe("snap-map", "dock-to", function (data) {
+                    //     console.log('Ive been told to dock!', data);
+                    // });
 
 
 
