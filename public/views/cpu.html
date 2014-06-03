@@ -8,6 +8,9 @@
 </head>
 <body class="of-draggable">
     <div class="container of-draggable">
+        <span  class="undock" class="btn top-btn ">
+            UNDOCK
+        </span>
         <div id="minimize-window" class="btn top-btn cpu-minimize">
             <div class="minimize-bar"></div>
         </div>
@@ -28,5 +31,64 @@
     <script src="/js/utils.js"></script>
     <script src="/js/cpu.charts.js"></script>
     <script src="/js/cpu-window.js"></script>
+
+    <script>
+        (function() {
+            'use strict';
+            document.addEventListener('DOMContentLoaded', function() {
+                //OpenFin is ready.
+                fin.desktop.main(function() {
+
+
+                    //request the windows.
+                    var mainWindow = fin.desktop.Window.getCurrent();
+
+                    mainWindow.getBounds(function(bounds){
+
+
+                        fin.desktop.InterApplicationBus.publish( "dock-subscribe", {
+                            name : mainWindow.name,
+                            app_uuid : mainWindow.app_uuid,
+                            location:  bounds
+                        });
+                    },
+                    function(err){
+                        console.log('the err', err)
+                    });
+
+                    mainWindow.addEventListener('bounds-changing', function(data) {
+                        //console.log('on the move ', data);
+
+                        mainWindow.getBounds(function(bounds){
+
+                            //console.log('where im at', bounds);
+
+                            fin.desktop.InterApplicationBus.publish( "dock-window-move", {
+                                bounds : bounds,
+                                name : mainWindow.name
+                            });
+
+
+                        },
+                        function(err){
+                            console.log('the err', err)
+                        });
+                    }); //end bounds changing
+
+
+                    fin.desktop.InterApplicationBus.subscribe("snap-map", "dock-to", function (data) {
+                        console.log('Ive been told to dock!', data);
+                    });
+
+
+
+
+                }); //end desktop main
+            }); // end DOMContentLoaded
+        }());//end iife
+
+    </script>
+
+
 </body>
 </html>

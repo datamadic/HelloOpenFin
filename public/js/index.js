@@ -13,6 +13,86 @@
                     "url": 'views/cpu.html',
                 });
 
+
+            console.log('I created this cpu window', cpuWindow);
+
+
+            //function subscribeToDocking(mainWindow){
+
+                //console.log('this is the main window in here ', mainWindow);
+
+                mainWindow.getBounds(function(bounds){
+
+                    console.log('where im at', bounds);
+                    console.log('this is the main window in here ', {
+                        name : mainWindow.name,
+                        app_uuid : mainWindow.app_uuid,
+                        location:  bounds
+                    });
+                    fin.desktop.InterApplicationBus.publish( "dock-subscribe", {
+                        name : mainWindow.name,
+                        app_uuid : mainWindow.app_uuid,
+                        location:  bounds
+                    });
+                },
+                function(err){
+                    console.log('the err', err)
+                });
+
+            //}
+
+            console.log('this is the main window', mainWindow);
+
+            mainWindow.addEventListener('bounds-changing', function(data) {
+
+                mainWindow.getBounds(function(bounds){
+
+                    console.log('where im at', bounds,{
+                        bounds : bounds,
+                        name : mainWindow.name
+                    });
+
+                    fin.desktop.InterApplicationBus.publish( "dock-window-move", {
+                        bounds : bounds,
+                        name : mainWindow.name
+                    });
+
+                },
+                function(err){
+                    console.log('the err', err)
+                });
+
+            });
+
+            // fin.desktop.InterApplicationBus.subscribe("snap-map", "dock-to", function (data) {
+            //     console.log('Ive been told to dock!', data);
+
+            //     var windowList = [mainWindow];
+
+            //     fin.desktop.Application.getCurrent()
+            //         .getChildWindows(function(children){
+            //             // //console.log('this is for a dock', children, typeof children);
+            //             // if (children) {
+            //             //     windowList = windowList.concat(children);
+            //             //     //console.log('this is the windowList', windowList);
+
+            //             //     var dockMap = _.object(_.map(windowList, function(wnd){
+            //             //         return [wnd.name, wnd];
+            //             //     }));
+            //             //     console.log('this is the dockMap', dockMap, data);
+
+            //             //     dockMap[data.docker].joinGroup(dockMap[data.dockee]);
+            //             //     //console.log('this be the windows ',dockMap[data.docker], dockMap[data.dockee]  )
+
+
+            //             // }//end if children
+
+
+            //         })//end getChildWindows
+
+
+            // });//end subscribe
+
             //set up window move effects.
             //utils.registerDragHandler(mainWindow);
 

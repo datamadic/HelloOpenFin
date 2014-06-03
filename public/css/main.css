@@ -199,3 +199,11 @@ polyline{
 .y, .x, .legend{
     fill : #fff;
   }
+
+span.undock {
+    color : blue;
+    float : left;
+    padding-left: 25px;
+    font-weight: bold;
+    /*background-color: #2D2D2D;*/
+}
