@@ -81,33 +81,86 @@
                         });
                     }); //end bounds changing
 
-            var draggableArea = document.querySelector('.container'),
-                canDock = false,
-                dock = document.querySelector('.dock');
-
-            draggableArea.addEventListener('mouseup',function(){
-                console.log('the mouse has been upped');
-            });
 
 
 
-            fin.desktop.InterApplicationBus.subscribe("snap-map", "dock:"+mainWindow.name, function (data) {
-
-                console.log('Ive been told to dock!', data);
 
 
-                dock.style.display = 'block';
-                //dock.style.color = 'green';
-                //var dockingWindow = fin.desktop.Window.wrap(data.dockee.app_uuid,data.dockee.name);
-                //mainWindow.joinGroup(dockingWindow);
+                    var draggableArea = document.querySelector('.container'),
+                        dockingTarget = false,
+                        currentlyDocking = false,
+                        dock = document.querySelector('.dock');
 
-            });//end subscribe
-            fin.desktop.InterApplicationBus.subscribe("snap-map", "dock-no-candidate:"+mainWindow.name, function (data) {
 
-                dock.style.display = 'none';
-                console.log('all alone... cant dock', data);
+                    //set the drag animations.
+                    mainWindow.defineDraggableArea(draggableArea, function(data) {
+                        mainWindow.animate({
+                            opacity: .7,
+                        }, {
+                            interrupt: false
+                        });
+                    }, function(data) {
+                        mainWindow.animate({
+                            opacity: 1
+                        }, {
+                            interrupt: false
+                        });
+                        mouseUpOnDraggable();
+                    }, function(err) {
+                        console.log(err);
+                    });
 
-            });//end subscribe
+                    draggableArea.addEventListener('mouseup',mouseUpOnDraggable);
+
+                    function mouseUpOnDraggable(){
+                        console.log('the mouse has been upped',dockingTarget);
+                        if (dockingTarget){
+                            currentlyDocking = true;
+                            var destination = {
+                                top: dockingTarget.bounds.top,
+                                left: dockingTarget.bounds.left + dockingTarget.bounds.width,
+                                duration: 1000
+                            };
+
+                            mainWindow.animate({
+                                opacity: .7,
+                                position: destination
+                            }, {
+                                interrupt: true
+                            },
+                            function(evt) {
+                                mainWindow.animate({
+                                    opacity: 1
+                                });
+
+                                var dockingWindow = fin.desktop.Window.wrap(dockingTarget.dockee.app_uuid,dockingTarget.dockee.name);
+                                mainWindow.joinGroup(dockingWindow);
+                                dock.style.display = 'none';
+                                currentlyDocking = false;
+                                dockingTarget = false;
+                            });
+                        }
+                    }
+
+
+                    fin.desktop.InterApplicationBus.subscribe("snap-map", "dock:"+mainWindow.name, function (data) {
+
+                        console.log('Ive been told to dock!', data);
+
+                        if (!currentlyDocking) {
+                            dock.style.display = 'block';
+                        }
+
+                        dockingTarget = data;
+
+                    });//end subscribe
+                    fin.desktop.InterApplicationBus.subscribe("snap-map", "dock-no-candidate:"+mainWindow.name, function (data) {
+
+                        dock.style.display = 'none';
+                        dockingTarget = false;
+                        console.log('all alone... cant dock', data);
+
+                    });//end subscribe
 
 
 

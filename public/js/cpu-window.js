@@ -27,22 +27,22 @@ document.addEventListener('DOMContentLoaded', function() {
             mainWindow.minimize();
         });
 
-        //set the drag animations.
-        mainWindow.defineDraggableArea(draggableArea, function(data) {
-            mainWindow.animate({
-                opacity: utils.transparentOpacityAnimation,
-            }, {
-                interrupt: false
-            });
-        }, function(data) {
-            mainWindow.animate({
-                opacity: utils.solidOpacityAnimation
-            }, {
-                interrupt: false
-            });
-        }, function(err) {
-            console.log(err);
-        });
+        // //set the drag animations.
+        // mainWindow.defineDraggableArea(draggableArea, function(data) {
+        //     mainWindow.animate({
+        //         opacity: utils.transparentOpacityAnimation,
+        //     }, {
+        //         interrupt: false
+        //     });
+        // }, function(data) {
+        //     mainWindow.animate({
+        //         opacity: utils.solidOpacityAnimation
+        //     }, {
+        //         interrupt: false
+        //     });
+        // }, function(err) {
+        //     console.log(err);
+        // });
 
     });
 });
