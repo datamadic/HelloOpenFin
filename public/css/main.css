@@ -201,9 +201,19 @@ polyline{
   }
 
 span.undock {
-    color : blue;
+    color : #4F8ABA;
     float : left;
-    padding-left: 25px;
+    padding-left: 10px;
+    padding-right: 10px;
     font-weight: bold;
+    display: none;
     /*background-color: #2D2D2D;*/
+}
+span.dock {
+    color : #ABCBE8;
+    float : left;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-weight: bold;
+    display: none;
 }

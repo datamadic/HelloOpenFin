@@ -43,7 +43,7 @@
 
                 mainWindow.getBounds(function(bounds){
 
-                    console.log('where im at', bounds);
+                   // console.log('where im at', bounds);
 
                     fin.desktop.InterApplicationBus.publish( "dock-window-move", {
                         bounds : bounds,
@@ -57,36 +57,17 @@
 
             });
 
-            fin.desktop.InterApplicationBus.subscribe("snap-map", "dock-to", function (data) {
-                //console.log('Ive been told to dock!', data);
 
-                var windowList = [mainWindow];
+            fin.desktop.InterApplicationBus.subscribe("snap-map", "dock:"+mainWindow.name, function (data) {
 
-                fin.desktop.Application.getCurrent()
-                    .getChildWindows(function(children){
-                        var docker, dockee;
+                console.log('Ive been told to dock!', data);
+                //var dockingWindow = fin.desktop.Window.wrap(data.dockee.app_uuid,data.dockee.name);
+                //mainWindow.joinGroup(dockingWindow);
 
-                        console.log('this is for a dock', children, typeof children);
+            });//end subscribe
+            fin.desktop.InterApplicationBus.subscribe("snap-map", "dock-no-candidate:"+mainWindow.name, function (data) {
 
-                        if (children) {
-                            windowList = windowList.concat(children);
-                            console.log('this is the windowList', windowList);
-
-                            var dockMap = _.object(_.map(windowList, function(wnd){
-                                return [wnd.name, wnd];
-                            }));
-                            console.log('this is the dockMap', dockMap, data);
-
-                            console.log('this is the docker deal', dockMap[data.docker])
-                            docker = dockMap[data.docker];
-                            dockee = dockMap[data.dockee];
-                            _.once(docker.joinGroup(dockee));
-
-                        }//end if children
-
-
-                    })//end getChildWindows
-
+                console.log('all alone... cant dock', data);
 
             });//end subscribe
 

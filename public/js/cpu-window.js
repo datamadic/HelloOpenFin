@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
             draggableArea = document.querySelector('.container'),
             mainWindow = fin.desktop.Window.getCurrent();
 
+
+
         /* kick off a d3 chart that displays cpu usage data */
         cpuChart.initChart();
 

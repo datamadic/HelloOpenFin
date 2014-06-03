@@ -8,9 +8,12 @@
 </head>
 <body class="of-draggable">
     <div class="container of-draggable">
-        <div style="color:red;" class="undock" class="btn top-btn ">
-            UNDOCK
-        </div>
+        <span class="undock btn top-btn ">
+            undock
+        </span>
+        <span class="dock btn top-btn ">
+            dock
+        </span>
         <div id="minimize-window" class="btn top-btn cpu-minimize">
             <div class="minimize-bar"></div>
         </div>
@@ -36,6 +39,9 @@
         (function() {
             'use strict';
             document.addEventListener('DOMContentLoaded', function() {
+
+
+
                 //OpenFin is ready.
                 fin.desktop.main(function() {
 
@@ -75,10 +81,33 @@
                         });
                     }); //end bounds changing
 
+            var draggableArea = document.querySelector('.container'),
+                canDock = false,
+                dock = document.querySelector('.dock');
 
-                    // fin.desktop.InterApplicationBus.subscribe("snap-map", "dock-to", function (data) {
-                    //     console.log('Ive been told to dock!', data);
-                    // });
+            draggableArea.addEventListener('mouseup',function(){
+                console.log('the mouse has been upped');
+            });
+
+
+
+            fin.desktop.InterApplicationBus.subscribe("snap-map", "dock:"+mainWindow.name, function (data) {
+
+                console.log('Ive been told to dock!', data);
+
+
+                dock.style.display = 'block';
+                //dock.style.color = 'green';
+                //var dockingWindow = fin.desktop.Window.wrap(data.dockee.app_uuid,data.dockee.name);
+                //mainWindow.joinGroup(dockingWindow);
+
+            });//end subscribe
+            fin.desktop.InterApplicationBus.subscribe("snap-map", "dock-no-candidate:"+mainWindow.name, function (data) {
+
+                dock.style.display = 'none';
+                console.log('all alone... cant dock', data);
+
+            });//end subscribe
 
 
 
