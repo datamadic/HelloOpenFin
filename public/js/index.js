@@ -1,4 +1,6 @@
-(function() {
+var dockingAdapter = dockingAdapter || {};
+
+(function(dockingAdapter) {
     'use strict';
     document.addEventListener('DOMContentLoaded', function() {
 
@@ -10,188 +12,11 @@
                 //start the cpu window in a hidded state
                 cpuWindow = WindowFactory.create({
                     "name": "cpuChild",
-                    "url": 'views/cpu.html',
+                    "url": 'views/cpu.html'
                 });
 
 
-            //*****************************************************************
-            // the playground starts here ...
-            //*****************************************************************
 
-
-                    mainWindow.getBounds(function(bounds){
-
-
-                        fin.desktop.InterApplicationBus.publish( "dock-subscribe", {
-                            name : mainWindow.name,
-                            app_uuid : mainWindow.app_uuid,
-                            location:  bounds
-                        });
-                    },
-                    function(err){
-                        console.log('the err', err)
-                    });
-
-                    mainWindow.addEventListener('bounds-changing', function(data) {
-                        //console.log('on the move ', data);
-
-                        mainWindow.getBounds(function(bounds){
-
-                            //console.log('where im at', bounds);
-
-                            fin.desktop.InterApplicationBus.publish( "dock-window-move", {
-                                bounds : bounds,
-                                name : mainWindow.name
-                            });
-
-
-                        },
-                        function(err){
-                            console.log('the err', err)
-                        });
-                    }); //end bounds changing
-
-
-
-
-
-
-                    var draggableArea = document.querySelector('.container'),
-                        dockingTarget = false,
-                        currentlyDocking = false,
-                        dock = document.querySelector('.dock');
-
-
-                    //set the drag animations.
-                    mainWindow.defineDraggableArea(draggableArea, function(data) {
-                        mainWindow.animate({
-                            opacity: .7,
-                        }, {
-                            interrupt: false
-                        });
-                    }, function(data) {
-                        mainWindow.animate({
-                            opacity: 1
-                        }, {
-                            interrupt: false
-                        });
-                        mouseUpOnDraggable();
-                    }, function(err) {
-                        console.log(err);
-                    });
-
-                    draggableArea.addEventListener('mouseup',mouseUpOnDraggable);
-
-                    function mouseUpOnDraggable(){
-                        console.log('the mouse has been upped');
-                        if (dockingTarget){
-                            currentlyDocking = true;
-                            var destination = {
-                                top: dockingTarget.bounds.top,
-                                left: dockingTarget.bounds.left + dockingTarget.bounds.width,
-                                duration: 1000
-                            };
-
-                            mainWindow.animate({
-                                opacity: .7,
-                                position: destination
-                            }, {
-                                interrupt: true
-                            },
-                            function(evt) {
-                                mainWindow.animate({
-                                    opacity: 1
-                                });
-
-                                var dockingWindow = fin.desktop.Window.wrap(dockingTarget.dockee.app_uuid,dockingTarget.dockee.name);
-                                mainWindow.joinGroup(dockingWindow);
-                                dock.style.display = 'none';
-                                currentlyDocking = false;
-                                dockingTarget = false;
-                            });
-                        }
-                    }
-
-
-                    fin.desktop.InterApplicationBus.subscribe("snap-map", "dock:"+mainWindow.name, function (data) {
-
-                        console.log('Ive been told to dock!', data);
-
-                        if (!currentlyDocking) {
-                            dock.style.display = 'block';
-                        }
-
-                        dockingTarget = data;
-
-                    });//end subscribe
-                    fin.desktop.InterApplicationBus.subscribe("snap-map", "dock-no-candidate:"+mainWindow.name, function (data) {
-
-                        dock.style.display = 'none';
-                        dockingTarget = false;
-                        console.log('all alone... cant dock', data);
-
-                    });//end subscribe
-
-
-            // //function subscribeToDocking(mainWindow){
-
-            //     //console.log('this is the main window in here ', mainWindow);
-
-            //     mainWindow.getBounds(function(bounds){
-
-            //         console.log('where im at', bounds);
-            //         console.log('this is the main window in here ', mainWindow);
-            //         fin.desktop.InterApplicationBus.publish( "dock-subscribe", {
-            //             name : mainWindow.name,
-            //             app_uuid : mainWindow.app_uuid,
-            //             location:  bounds
-            //         });
-            //     },
-            //     function(err){
-            //         console.log('the err', err)
-            //     });
-
-            // //}
-
-            // console.log('this is the main window', mainWindow);
-
-            // mainWindow.addEventListener('bounds-changing', function(data) {
-
-            //     mainWindow.getBounds(function(bounds){
-
-            //        // console.log('where im at', bounds);
-
-            //         fin.desktop.InterApplicationBus.publish( "dock-window-move", {
-            //             bounds : bounds,
-            //             name : mainWindow.name
-            //         });
-
-            //     },
-            //     function(err){
-            //         console.log('the err', err)
-            //     });
-
-            // });
-
-
-            // fin.desktop.InterApplicationBus.subscribe("snap-map", "dock:"+mainWindow.name, function (data) {
-
-            //     console.log('Ive been told to dock!', data);
-            //     //var dockingWindow = fin.desktop.Window.wrap(data.dockee.app_uuid,data.dockee.name);
-            //     //mainWindow.joinGroup(dockingWindow);
-
-            // });//end subscribe
-            // fin.desktop.InterApplicationBus.subscribe("snap-map", "dock-no-candidate:"+mainWindow.name, function (data) {
-
-            //     console.log('all alone... cant dock', data);
-
-            // });//end subscribe
-
-
-
-            //*****************************************************************
-            // all the same after here...
-            //*****************************************************************
 
             //set up window move effects.
             //utils.registerDragHandler(mainWindow);
@@ -218,6 +43,17 @@
 
             //show the main window now that we are ready.
             mainWindow.show();
+
+            //*****************************************************************
+            // the playground starts here ...
+            //*****************************************************************
+            console.log('this is the dockingA', dockingAdapter);
+            dockingAdapter.init(mainWindow, fin, document);
+
+
+            //*****************************************************************
+            // all the same after here...
+            //*****************************************************************
         });
 
         //set event handlers for the different buttons.
@@ -333,4 +169,4 @@
             });
         };
     });
-}());
+}(dockingAdapter));

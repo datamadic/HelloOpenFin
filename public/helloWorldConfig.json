@@ -21,6 +21,7 @@
         "defaultWidth": 395,
         "maxWidth": 395,
         "maxHeight": 525,
+        "maximizable":false,
         "defaultTop": 50,
         "defaultLeft": 10,
         "frame": false,
