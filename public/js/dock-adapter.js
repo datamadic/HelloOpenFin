@@ -79,6 +79,23 @@ var dockingAdapter = (function(){
 
         function undockWindow(){
             console.warn('undock?!');
+            me.managedState.mainWindow.leaveGroup(function(){
+
+                fin.desktop.InterApplicationBus.publish( "dock-undocked", {
+                    target : me.managedState.dockingTarget.dockee.name,
+                    name : me.managedState.mainWindow.name
+                });
+
+                me.managedState.isDocked = false;
+                me.managedState.canDock = true;
+
+                //dock.style.display = 'block';
+                undock.style.display = 'none';
+
+
+            },function(err){
+                console.warn(err);
+            });
 
         }
 
@@ -182,7 +199,7 @@ var dockingAdapter = (function(){
                 dock.style.display = 'none';
                 //me.managedState.dockingTarget = false;
                 me.managedState.canDock = false;
-                console.log('all alone... cant dock', data);
+                console.warn('all alone... cant dock', data);
             }
 
 
