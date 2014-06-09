@@ -1,7 +1,9 @@
 
 var dockingAdapter = (function(){
 
-    var me = {};
+    var me = {},
+        fin = {};
+
     me.managedState = {
         dockingTarget : false,
         canDock : false,
@@ -9,18 +11,23 @@ var dockingAdapter = (function(){
         isDocked : false
 
     };
-    // DockNoCandidateCallback
-    // DockEligibleCallback
 
 
 
-
-    me.init = function(mainWindow, fin ){
-        console.warn('initting');
+    me.init = function(config ){
 
         var draggableArea = document.querySelector('.container'),
             dock = document.querySelector('.dock'),
-            undock = document.querySelector('.undock');
+            undock = document.querySelector('.undock'),
+            mainWindow = config.mainWindow;
+        fin = config.fin;
+
+        me.windowCallbacks = {
+            onDockCandidate : config.onDockCandidate,
+            onNoDockCandidate : config.onNoDockCandidate,
+            onDocked : config.onDocked,
+            onUnDocked : config.onUnDocked
+        };
 
         me.managedState.mainWindow = mainWindow;
 
@@ -47,15 +54,16 @@ var dockingAdapter = (function(){
             console.log(err);
         });
 
-
-        undock.addEventListener('click',function(){
-            undockWindow(fin, undock);
-        });
-
     };//end init
 
 
-    function mouseUpOnDraggable(fin, dock, undock){
+    // this needs to be called by the user window
+    me.undock = function(){
+        undockWindow(fin);
+    };
+
+
+    function mouseUpOnDraggable(fin){
 
         if (me.managedState.canDock && !me.managedState.isDocked){
 
@@ -88,22 +96,7 @@ var dockingAdapter = (function(){
     }//end mouseUpOnDraggable
 
 
-    function setPostDockingState (fin, dock, undock) {
-        dock.style.display = 'none';
-        undock.style.display = 'block';
-
-        fin.desktop.InterApplicationBus.publish( "dock-docked", {
-            target : me.managedState.dockingTarget.dockee.name,
-            name : me.managedState.mainWindow.name
-        });
-
-        me.managedState.currentlyDocking = false;
-        me.managedState.isDocked = true;
-        me.managedState.canDock = false;
-    }
-
-
-    function doDock(fin, bounds, dock, undock){
+    function doDock(fin, bounds){
 
         var topGood = (bounds.top === me.managedState.dockingTarget.bounds.top),
         leftGood = (bounds.left === me.managedState.dockingTarget.bounds.left + me.managedState.dockingTarget.bounds.width);
@@ -115,7 +108,7 @@ var dockingAdapter = (function(){
 
             me.managedState.mainWindow.joinGroup(dockingWindow, function(){
 
-                setPostDockingState (fin, dock, undock);
+                setPostDockingState (fin);
 
                 console.warn('it grouped just fine');
             },
@@ -131,7 +124,22 @@ var dockingAdapter = (function(){
     }
 
 
-    function undockWindow(fin, undock){
+    function setPostDockingState (fin) {
+
+        me.windowCallbacks.onDocked();
+
+        fin.desktop.InterApplicationBus.publish( "dock-docked", {
+            target : me.managedState.dockingTarget.dockee.name,
+            name : me.managedState.mainWindow.name
+        });
+
+        me.managedState.currentlyDocking = false;
+        me.managedState.isDocked = true;
+        me.managedState.canDock = false;
+    }
+
+
+    function undockWindow(fin){
         me.managedState.mainWindow.leaveGroup(function(){
 
             fin.desktop.InterApplicationBus.publish( "dock-undocked", {
@@ -141,7 +149,8 @@ var dockingAdapter = (function(){
 
             me.managedState.isDocked = false;
             me.managedState.canDock = true;
-            undock.style.display = 'none';
+
+            me.windowCallbacks.onUnDocked();
 
         },function(err){
             console.warn(err);
@@ -154,8 +163,9 @@ var dockingAdapter = (function(){
         fin.desktop.InterApplicationBus.subscribe("snap-map", "dock-no-candidate:"+me.managedState.mainWindow.name, function (data) {
 
             if (!me.managedState.currentlyDocking  && !me.managedState.isDocked) {
-                dock.style.display = 'none';
-                //me.managedState.dockingTarget = false;
+
+                me.windowCallbacks.onNoDockCandidate();
+
                 me.managedState.canDock = false;
                 console.warn('all alone... cant dock', data);
             }
@@ -170,9 +180,7 @@ var dockingAdapter = (function(){
 
             if (!me.managedState.currentlyDocking && !me.managedState.isDocked) {
 
-                var isDockShowing = dock.style.display === 'block';
-
-                if(!isDockShowing) {dock.style.display = 'block';}
+                me.windowCallbacks.onDockCandidate();
 
                 me.managedState.dockingTarget = data;
                 me.managedState.canDock = true;

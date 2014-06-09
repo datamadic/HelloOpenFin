@@ -47,13 +47,44 @@ var dockingAdapter = dockingAdapter || {};
             //*****************************************************************
             // the playground starts here ...
             //*****************************************************************
-            console.log('this is the dockingA', dockingAdapter);
-            dockingAdapter.init(mainWindow, fin, document);
 
+            var dock = document.querySelector('.dock'),
+                undock = document.querySelector('.undock');
+
+            undock.addEventListener('click',function(){
+                //do some app specific stuff here ...
+
+                //then call the adapter undocking function
+                 dockingAdapter.undock();
+            });
+
+            dockingAdapter.init({
+                mainWindow : mainWindow,
+                fin : fin,
+                onDockCandidate : function(){
+                    var isDockShowing = dock.style.display === 'block';
+
+                    if(!isDockShowing) {
+                        dock.style.display = 'block';
+                    }
+                },
+                onNoDockCandidate : function(){
+                    dock.style.display = 'none';
+                },
+                onDocked : function(){
+                    dock.style.display = 'none';
+                    undock.style.display = 'block';
+                },
+                onUnDocked : function(){
+                    undock.style.display = 'none';
+                }
+            });
 
             //*****************************************************************
             // all the same after here...
             //*****************************************************************
+
+
         });
 
         //set event handlers for the different buttons.
