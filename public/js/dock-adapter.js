@@ -1,3 +1,4 @@
+
 var dockingAdapter = (function(){
 
     var me = {};
@@ -23,15 +24,16 @@ var dockingAdapter = (function(){
             });
         },
         function(err){
-            console.log('the err', err)
+            console.log('the err', err);
         });
 
         me.managedState.mainWindow.addEventListener('bounds-changing', function(data) {
-            //console.log('on the move ', data);
+            console.log('on the move ', data);
+
 
             me.managedState.mainWindow.getBounds(function(bounds){
 
-                //console.log('where im at', bounds);
+                console.log('where im at', bounds);
 
                 fin.desktop.InterApplicationBus.publish( "dock-window-move", {
                     bounds : bounds,
@@ -41,11 +43,9 @@ var dockingAdapter = (function(){
 
             },
             function(err){
-                console.log('the err', err)
+                console.log('the err', err);
             });
         }); //end bounds changing
-
-
 
 
 
@@ -58,7 +58,7 @@ var dockingAdapter = (function(){
         //set the drag animations.
         me.managedState.mainWindow.defineDraggableArea(draggableArea, function(data) {
             me.managedState.mainWindow.animate({
-                opacity: .7,
+                opacity: 0.7,
             }, {
                 interrupt: false
             });
@@ -73,7 +73,7 @@ var dockingAdapter = (function(){
             console.log(err);
         });
 
-        //WindowFactory.create({name:"asdfasdfa",url:"views/cpu.html",autoShow:true});
+        //WindowFactory.create({name:"asdfasdfa",url:"views/cpu.html",autoShow:true, "resizable": true,});
 
         undock.addEventListener('click',undockWindow);
 
@@ -113,7 +113,7 @@ var dockingAdapter = (function(){
                 };
 
                 me.managedState.mainWindow.animate({
-                    opacity: .7,
+                    opacity: 0.7,
                     position: destination
                 }, {
                     interrupt: true
@@ -173,7 +173,7 @@ var dockingAdapter = (function(){
                     });
 
 
-});
+            });//end animate
 
             }//end if docking target
         }
@@ -182,9 +182,14 @@ var dockingAdapter = (function(){
         fin.desktop.InterApplicationBus.subscribe("snap-map", "dock:"+me.managedState.mainWindow.name, function (data) {
 
 
+            console.warn('this is the managed state', me.managedState);
 
             if (!me.managedState.currentlyDocking && !me.managedState.isDocked) {
-                dock.style.display = 'block';
+
+                var isDockShowing = dock.style.display === 'block';
+
+                if(!isDockShowing) {dock.style.display = 'block';}
+
                 me.managedState.dockingTarget = data;
                 me.managedState.canDock = true;
                 console.log('Ive been told to dock!', data);
@@ -207,8 +212,8 @@ var dockingAdapter = (function(){
         });//end subscribe
 
 
-    }//end init
+    };//end init
 
     return me;
 
-})()
+})();

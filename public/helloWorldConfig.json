@@ -1,38 +1,34 @@
 {
-    "default_icon": "default_icon.png",
-    "desktop_controller_url": "https://demoappdirectory.openf.in/desktop/desktopcontroller/2.0.5/index.html",
-    "desktop_core_url": "https://demoappdirectory.openf.in/desktop/desktopcore/2.0.5/index.html",
-    "devtools_port": 9090,
-    "env": "2.0.5.65",
-    "logging": true,
-    "manifest": {
-        "company": "OpenFin",
-        "description": "Hello Open Fin App.",
-        "icon": "https://demoappdirectory.openf.in/desktop/config/apps/OpenFin/StartMenu/2.0.5.16/icon.ico",
-        "name": "Hello OpenFin",
-        "runtime": "2.0.5.65",
-        "runtimeArgs": "",
-        "source": "http://localhost:5000/helloWorld.config.json"
-    },
-    "startup_app": {
-        "applicationIcon": "https://demoappdirectory.openf.in/desktop/config/apps/OpenFin/StartMenu/2.0.5.16/icon.png",
-        "autoShow": false,
-        "defaultHeight": 525,
-        "defaultWidth": 395,
-        "maxWidth": 395,
-        "maxHeight": 525,
-        "maximizable":false,
-        "defaultTop": 50,
-        "defaultLeft": 10,
-        "frame": false,
-        "name": "OpenFin Hello World",
-        "resizable": false,
-        "url": "http://localhost:5000",
-        "uuid": "OpenFinHelloWorld",
-        "cornerRounding" : {
-            "width" : 5,
-            "height" : 5
-        }
-    },
-    "websocket_port": 9696
+  "env": "2.0.6.2",
+  "desktop_core_url": "https://demoappdirectory.openf.in/desktop/desktopcore/2.0.6/index.html",
+  "desktop_controller_url": "https://demoappdirectory.openf.in/desktop/desktopcontroller/2.0.6/index.html",
+  "default_icon": "default_icon.png",
+  "startup_app": {
+    "name": "Hello Open Fin",
+    "url": "http://localhost:5000",
+    "uuid": "OpenFinHelloWorld",
+    "applicationIcon": "https://demoappdirectory.openf.in/desktop/config/apps/OpenFin/StartMenu/2.0.5.16/icon.png",
+    "autoShow": false,
+    "defaultHeight": 525,
+    "defaultWidth": 395,
+    "maxWidth": 395,
+    "maxHeight": 525,
+    "defaultTop": 50,
+    "defaultLeft": 10,
+    "frame": false,
+    "cornerRounding" : {
+        "width" : 5,
+        "height" : 5
+    }
+  },
+  "runtime": {
+    "arguments": "",
+    "version": "latest"
+  },
+  "shortcut": {
+    "company": "OpenFin",
+    "description": "Hello OpenFin",
+    "icon": "https://demoappdirectory.openf.in/desktop/config/apps/OpenFin/StartMenu/2.0.5.16/icon.ico",
+    "name": "Hello OpenFin"
+  }
 }
