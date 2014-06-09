@@ -31,10 +31,10 @@ var dockingAdapter = (function(){
 
         me.managedState.mainWindow = mainWindow;
 
-        subscribeToDocking(fin);
-        registerBoundsChanging(fin);
-        subscribeToDockEligible(fin, dock);
-        subscribeToDockNoCandidate(fin, dock);
+        subscribeToDocking();
+        registerBoundsChanging();
+        subscribeToDockEligible(dock);
+        subscribeToDockNoCandidate(dock);
 
         //set the drag animations.
         me.managedState.mainWindow.defineDraggableArea(draggableArea, function(data) {
@@ -59,11 +59,11 @@ var dockingAdapter = (function(){
 
     // this needs to be called by the user window
     me.undock = function(){
-        undockWindow(fin);
+        undockWindow();
     };
 
 
-    function mouseUpOnDraggable(fin){
+    function mouseUpOnDraggable(){
 
         if (me.managedState.canDock && !me.managedState.isDocked){
 
@@ -83,7 +83,7 @@ var dockingAdapter = (function(){
 
                 me.managedState.mainWindow.getBounds(function(bounds){
 
-                    doDock(fin, bounds, dock, undock);
+                    doDock(bounds);
 
                 },
                 function(err){
@@ -96,7 +96,7 @@ var dockingAdapter = (function(){
     }//end mouseUpOnDraggable
 
 
-    function doDock(fin, bounds){
+    function doDock(bounds){
 
         var topGood = (bounds.top === me.managedState.dockingTarget.bounds.top),
         leftGood = (bounds.left === me.managedState.dockingTarget.bounds.left + me.managedState.dockingTarget.bounds.width);
@@ -124,7 +124,7 @@ var dockingAdapter = (function(){
     }
 
 
-    function setPostDockingState (fin) {
+    function setPostDockingState () {
 
         me.windowCallbacks.onDocked();
 
@@ -139,7 +139,7 @@ var dockingAdapter = (function(){
     }
 
 
-    function undockWindow(fin){
+    function undockWindow(){
         me.managedState.mainWindow.leaveGroup(function(){
 
             fin.desktop.InterApplicationBus.publish( "dock-undocked", {
@@ -159,7 +159,7 @@ var dockingAdapter = (function(){
     }
 
 
-    function subscribeToDockNoCandidate(fin, dock) {
+    function subscribeToDockNoCandidate(dock) {
         fin.desktop.InterApplicationBus.subscribe("snap-map", "dock-no-candidate:"+me.managedState.mainWindow.name, function (data) {
 
             if (!me.managedState.currentlyDocking  && !me.managedState.isDocked) {
@@ -174,7 +174,7 @@ var dockingAdapter = (function(){
     }
 
 
-    function subscribeToDockEligible(fin, dock){
+    function subscribeToDockEligible(dock){
 
         fin.desktop.InterApplicationBus.subscribe("snap-map", "dock:"+me.managedState.mainWindow.name, function (data) {
 
@@ -191,7 +191,7 @@ var dockingAdapter = (function(){
     }
 
 
-    function subscribeToDocking(fin){
+    function subscribeToDocking(){
 
         me.managedState.mainWindow.getBounds(function(bounds){
 
@@ -208,7 +208,7 @@ var dockingAdapter = (function(){
     }//end subscribeToDocking
 
 
-    function registerBoundsChanging(fin) {
+    function registerBoundsChanging() {
 
         me.managedState.mainWindow.addEventListener('bounds-changing', function(data) {
             console.log('on the move ', data);
